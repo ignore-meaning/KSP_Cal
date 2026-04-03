@@ -13,4 +13,4 @@ def Sort(filename:str):
     with open(filename, 'w') as f:
         json.dump(result, f, indent=4)
 
-Style("Tank.json")
+Sort("Fuel.json")
