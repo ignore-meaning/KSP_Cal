@@ -77,9 +77,9 @@ for familyName, engineFamily_Data in Engines_Data.items():
     for name, engineData in engineFamily_Data['config'].items():
         Engines[familyName][name] = Engine(familyName, name, engineData, engineFamily_Data['origMass'])
 
-print('--- ' * 10)
-for tankName in Tanks:
-    Tanks[tankName].show()
-for engineFamilyName in Engines:
-    for engineName in Engines[engineFamilyName]:
-        Engines[engineFamilyName][engineName].show()
+# print('--- ' * 10)
+# for tankName in Tanks:
+#     Tanks[tankName].show()
+# for engineFamilyName in Engines:
+#     for engineName in Engines[engineFamilyName]:
+#         Engines[engineFamilyName][engineName].show()
