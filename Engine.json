@@ -1,0 +1,46 @@
+{
+    "Aerobee": {
+        "origMass": 0.008,
+        "config": {
+            "WAC-Corporal": {
+                "massMult": 1,
+                "maxThrust": 7.733,
+                "impulse": 226,
+                "ratedBurnTime": 47,
+                "propellant": {
+                    "ANFA22": 0.3531,
+                    "IRFNA-III": 0.6469
+                },
+                "gas": {
+                    "Nitrogen": 30.9
+                }
+            },
+            "XASR-1": {
+                "massMult": 1.3,
+                "maxThrust": 13.7628,
+                "impulse": 235.44,
+                "ratedBurnTime": 40,
+                "propellant": {
+                    "ANFA37": 0.3660,
+                    "IRFNA-III": 0.6340
+                },
+                "gas": {
+                    "Nitrogen": 34.2
+                }
+            },
+            "AJ10-27": {
+                "massMult": 1.5,
+                "maxThrust": 21.28,
+                "impulse": 231,
+                "ratedBurnTime": 52,
+                "propellant": {
+                    "ANFA37": 0.3660,
+                    "IRFNA-III": 0.6340
+                },
+                "gas": {
+                    "Helium": 33.45
+                }
+            }
+        }
+    }
+}

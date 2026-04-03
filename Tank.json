@@ -1,0 +1,12 @@
+{
+    "Steel Fuselage": {
+        "utilization": 83,
+        "densityStructure": 0.00007,
+        "densityContainer": 0.00006
+    },
+    "HP Steel Fuselage": {
+        "utilization": 75,
+        "densityStructure": 0.00017,
+        "densityContainer": 0.00016
+    }
+}
