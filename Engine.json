@@ -5,8 +5,9 @@
             "WAC-Corporal": {
                 "massMult": 1,
                 "maxThrust": 7.733,
-                "impulse": 226,
+                "Isp": 226,
                 "ratedBurnTime": 47,
+                "residual": 2.75,
                 "propellant": {
                     "ANFA22": 0.3531,
                     "IRFNA-III": 0.6469
@@ -18,8 +19,9 @@
             "XASR-1": {
                 "massMult": 1.3,
                 "maxThrust": 13.7628,
-                "impulse": 235.44,
+                "Isp": 235.44,
                 "ratedBurnTime": 40,
+                "residual": 2.56,
                 "propellant": {
                     "ANFA37": 0.3660,
                     "IRFNA-III": 0.6340
@@ -31,8 +33,9 @@
             "AJ10-27": {
                 "massMult": 1.5,
                 "maxThrust": 21.28,
-                "impulse": 231,
+                "Isp": 231,
                 "ratedBurnTime": 52,
+                "residual": 2.56,
                 "propellant": {
                     "ANFA37": 0.3660,
                     "IRFNA-III": 0.6340

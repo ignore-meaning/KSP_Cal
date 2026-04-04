@@ -31,14 +31,15 @@ class Engine:
         self.name = name
         self.mass = origMass * engineData['massMult'] * 1000
         self.maxThrust = engineData['maxThrust']
-        self.impulse = engineData['impulse']
+        self.Isp = engineData['Isp']
         self.ratedBurnTime = engineData['ratedBurnTime']
+        self.residual = engineData['residual']
         self.propellant = engineData['propellant']
         self.gas = engineData['gas']
         fuelInfo = {fuelName: Fuels[fuelName] for fuelName in list(self.propellant.keys()) + list(self.gas.keys())}
         self.consumption = [0, 0]
         self.consumptionDetail = {"propellant" : {propName : [0, 0] for propName in self.propellant}, "gas" : {gasName : [0, 0] for gasName in self.gas}}
-        conAllPropMass = self.maxThrust * 1000 / (G * self.impulse)
+        conAllPropMass = self.maxThrust * 1000 / (G * self.Isp)
         densityAllProp = sum(fuelInfo[prop] * ratio for prop, ratio in self.propellant.items()) * 1000
         conAllPropVolume = conAllPropMass / densityAllProp
         for propName in self.propellant:
@@ -57,7 +58,8 @@ class Engine:
         print(f"Engine Name: \t\t{self.name}")
         print(f"Mass: \t\t\t{self.mass:.4g} kg")
         print(f"Max Thrust: \t\t{self.maxThrust:.4g} kN")
-        print(f"Impulse: \t\t{self.impulse:.4g} s")
+        print(f"Isp: \t\t\t{self.Isp:.4g} s")
+        print(f"Residual: \t\t{self.residual:.4g}%")
         print(f"Rated Burn Time: \t{self.ratedBurnTime:.4g} s")
         print(f"Fuel Consumption Rate: \t{self.consumption[0]:.4g} kg/s")
         print(f"\t\t\t{self.consumption[1]:.4g} L/s")
@@ -79,19 +81,22 @@ class RealTank(Tank):
 
     def fillFuel(self, engineList: list[tuple[Engine, int]], time: float):
         fuelMass = 0
+        residualMass = 0
         for engine, num in engineList:
             for propName in engine.consumptionDetail["propellant"]:
                 if propName not in self.fuel: self.fuel[propName] = 0
-                self.fuel[propName] += num * engine.consumptionDetail["propellant"][propName][1] * time
-                fuelMass += num * engine.consumptionDetail["propellant"][propName][0] * time
+                self.fuel[propName] += num * engine.consumptionDetail["propellant"][propName][1] * time / (1 - engine.residual / 100)
+                fuelMass += num * engine.consumptionDetail["propellant"][propName][0] * time / (1 - engine.residual / 100)
+                residualMass += num * engine.consumptionDetail["propellant"][propName][0] * time / (1 - engine.residual / 100) * (engine.residual / 100)
             for gasName in engine.consumptionDetail["gas"]:
                 if gasName not in self.fuel: self.fuel[gasName] = 0
-                self.fuel[gasName] += num * engine.consumptionDetail["gas"][gasName][1] / 200 * time
-                fuelMass += num * engine.consumptionDetail["gas"][gasName][0] * time
+                self.fuel[gasName] += num * engine.consumptionDetail["gas"][gasName][1] / 200 * time / (1 - engine.residual / 100)
+                fuelMass += num * engine.consumptionDetail["gas"][gasName][0] * time / (1 - engine.residual / 100)
+                residualMass += num * engine.consumptionDetail["gas"][gasName][0] * time / (1 - engine.residual / 100) * (engine.residual / 100)
         self.capacity = sum(self.fuel.values())
         self.volume = self.capacity / self.utilization * 100
-        self.netMass = self.volume * self.effectiveDensity / 1000
-        self.wetMass = self.netMass + fuelMass
+        self.netMass = self.volume * self.effectiveDensity / 1000 + residualMass
+        self.wetMass = self.netMass - residualMass + fuelMass
 
     def info(self):
         info = super().info()
@@ -99,6 +104,8 @@ class RealTank(Tank):
         info.insert(1, f"Volume: \t\t{self.volume:.4g} L")
         info.insert(1, f"Wet Mass: \t\t{self.wetMass:.4g} kg")
         info.insert(1, f"Net Mass: \t\t{self.netMass:.4g} kg")
+        info.append("Fuels:")
+        info += [f"\t{f'{fuelName}:':15} {self.fuel[fuelName]:.4g} L" for fuelName in self.fuel]
         return info
 
     def show(self):
