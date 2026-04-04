@@ -1,5 +1,7 @@
 import json
 
+G = 9.80665
+
 class Tank:
     def __init__(self, name:str):
         tankData = Tanks_Data[name]
@@ -27,7 +29,7 @@ class Engine:
         origMass = Engines_Data[familyName]['origMass']
         self.familyName = familyName
         self.name = name
-        self.mass = origMass * engineData['massMult']
+        self.mass = origMass * engineData['massMult'] * 1000
         self.maxThrust = engineData['maxThrust']
         self.impulse = engineData['impulse']
         self.ratedBurnTime = engineData['ratedBurnTime']
@@ -36,7 +38,7 @@ class Engine:
         fuelInfo = {fuelName: Fuels[fuelName] for fuelName in list(self.propellant.keys()) + list(self.gas.keys())}
         self.consumption = [0, 0]
         self.consumptionDetail = {"propellant" : {propName : [0, 0] for propName in self.propellant}, "gas" : {gasName : [0, 0] for gasName in self.gas}}
-        conAllPropMass = self.maxThrust * 1000 / (9.80665 * self.impulse)
+        conAllPropMass = self.maxThrust * 1000 / (G * self.impulse)
         densityAllProp = sum(fuelInfo[prop] * ratio for prop, ratio in self.propellant.items()) * 1000
         conAllPropVolume = conAllPropMass / densityAllProp
         for propName in self.propellant:
@@ -72,17 +74,30 @@ class RealTank(Tank):
         self.volume = 0
         self.capacity = 0
         self.netMass = 0
-        self.wetmass = 0
+        self.wetMass = 0
         self.fuel = {}
 
-    def fillFuel(self, engineList: list[tuple[Engine, float]]):
-        return 0
+    def fillFuel(self, engineList: list[tuple[Engine, int]], time: float):
+        fuelMass = 0
+        for engine, num in engineList:
+            for propName in engine.consumptionDetail["propellant"]:
+                if propName not in self.fuel: self.fuel[propName] = 0
+                self.fuel[propName] += num * engine.consumptionDetail["propellant"][propName][1] * time
+                fuelMass += num * engine.consumptionDetail["propellant"][propName][0] * time
+            for gasName in engine.consumptionDetail["gas"]:
+                if gasName not in self.fuel: self.fuel[gasName] = 0
+                self.fuel[gasName] += num * engine.consumptionDetail["gas"][gasName][1] / 200 * time
+                fuelMass += num * engine.consumptionDetail["gas"][gasName][0] * time
+        self.capacity = sum(self.fuel.values())
+        self.volume = self.capacity / self.utilization * 100
+        self.netMass = self.volume * self.effectiveDensity / 1000
+        self.wetMass = self.netMass + fuelMass
 
     def info(self):
         info = super().info()
         info.insert(1, f"Capacity: \t\t{self.capacity:.4g} L")
         info.insert(1, f"Volume: \t\t{self.volume:.4g} L")
-        info.insert(1, f"Wet Mass: \t\t{self.wetmass:.4g} kg")
+        info.insert(1, f"Wet Mass: \t\t{self.wetMass:.4g} kg")
         info.insert(1, f"Net Mass: \t\t{self.netMass:.4g} kg")
         return info
 
@@ -96,9 +111,6 @@ with open("Fuel.json", 'r') as f:
 
 with open("Tank.json", 'r') as f:
     Tanks_Data = json.load(f)
-Tanks = {}
-for name in Tanks_Data:
-    Tanks[name] = Tank(name)
 
 with open("Engine.json", 'r') as f:
     Engines_Data = json.load(f)
@@ -108,7 +120,7 @@ for familyName, engineFamily_Data in Engines_Data.items():
         Engines[name] = Engine(familyName, name)
 
 # print('--- ' * 10)
-# for tankName in Tanks:
-#     Tanks[tankName].show()
+# for tankName in Tanks_Data:
+#     Tank(tankName).show()
 # for engineName in Engines:
 #     Engines[engineName].show()
