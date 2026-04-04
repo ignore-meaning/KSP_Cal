@@ -1,23 +1,30 @@
 import json
 
 class Tank:
-    def __init__(self, name:str, tankData:dict):
+    def __init__(self, name:str):
+        tankData = Tanks_Data[name]
         self.name = name
         self.utilization = tankData['utilization']
         self.densityStructure = tankData['densityStructure'] * 1e6
         self.densityContainer = tankData['densityContainer'] * 1e6
         self.effectiveDensity = self.densityStructure + self.densityContainer * self.utilization / 100
 
+    def info(self):
+        info = [f"Tank Name: \t\t{self.name}",
+                f"Utilization: \t\t{self.utilization}%",
+                f"Structure Density: \t{self.densityStructure:.4g} kg/kL",
+                f"Container Density: \t{self.densityContainer:.4g} kg/kL",
+                f"Effective Density: \t{self.effectiveDensity:.4g} kg/kL"]
+        return info
+
     def show(self):
-        print(f"Tank Name: \t\t{self.name}")
-        print(f"Utilization: \t\t{self.utilization}%")
-        print(f"Structure Density: \t{self.densityStructure:.4g} kg/kL")
-        print(f"Container Density: \t{self.densityContainer:.4g} kg/kL")
-        print(f"Effective Density: \t{self.effectiveDensity:.4g} kg/kL")
+        print("\n".join(self.info()))
         print('--- ' * 10)
 
 class Engine:
-    def __init__(self, familyName:str, name:str, engineData:dict, origMass:float):
+    def __init__(self, familyName:str, name:str):
+        engineData = Engines_Data[familyName]['config'][name]
+        origMass = Engines_Data[familyName]['origMass']
         self.familyName = familyName
         self.name = name
         self.mass = origMass * engineData['massMult']
@@ -59,6 +66,30 @@ class Engine:
                 print(f"\t\t\t{self.consumptionDetail[fuelType][fuelName][1]:.4g} L/s")
         print('--- ' * 10)
 
+class RealTank(Tank):
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.volume = 0
+        self.capacity = 0
+        self.netMass = 0
+        self.wetmass = 0
+        self.fuel = {}
+
+    def fillFuel(self, engineList: list[tuple[Engine, float]]):
+        return 0
+
+    def info(self):
+        info = super().info()
+        info.insert(1, f"Capacity: \t\t{self.capacity:.4g} L")
+        info.insert(1, f"Volume: \t\t{self.volume:.4g} L")
+        info.insert(1, f"Wet Mass: \t\t{self.wetmass:.4g} kg")
+        info.insert(1, f"Net Mass: \t\t{self.netMass:.4g} kg")
+        return info
+
+    def show(self):
+        print("\n".join(self.info()))
+        print('--- ' * 10)
+
 
 with open("Fuel.json", 'r') as f:
     Fuels = json.load(f)
@@ -66,20 +97,18 @@ with open("Fuel.json", 'r') as f:
 with open("Tank.json", 'r') as f:
     Tanks_Data = json.load(f)
 Tanks = {}
-for name, tankData in Tanks_Data.items():
-    Tanks[name] = Tank(name,tankData)
+for name in Tanks_Data:
+    Tanks[name] = Tank(name)
 
 with open("Engine.json", 'r') as f:
     Engines_Data = json.load(f)
 Engines = {}
 for familyName, engineFamily_Data in Engines_Data.items():
-    Engines[familyName] = {}
-    for name, engineData in engineFamily_Data['config'].items():
-        Engines[familyName][name] = Engine(familyName, name, engineData, engineFamily_Data['origMass'])
+    for name in engineFamily_Data['config']:
+        Engines[name] = Engine(familyName, name)
 
 # print('--- ' * 10)
 # for tankName in Tanks:
 #     Tanks[tankName].show()
-# for engineFamilyName in Engines:
-#     for engineName in Engines[engineFamilyName]:
-#         Engines[engineFamilyName][engineName].show()
+# for engineName in Engines:
+#     Engines[engineName].show()
