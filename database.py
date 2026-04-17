@@ -1,7 +1,9 @@
 import json, math
 G = 9.80665
 
-def fuelDictPlus(a: dict[str, dict[str, float]], b: dict[str, dict[str, float]]) -> dict[str, dict[str, float]]:
+type FuelType = dict[str, dict[str, float]]
+
+def fuelDictPlus(a: FuelType, b: FuelType) -> FuelType:
     result = {}
     for key1 in list(a.keys()) + list(b.keys()):
         result[key1] = {}
@@ -13,14 +15,13 @@ def fuelDictPlus(a: dict[str, dict[str, float]], b: dict[str, dict[str, float]])
                 if not key2 in result[key1]: result[key1][key2] = 0
                 result[key1][key2] += b[key1][key2]
     return result
-def fuelDictMul(a: dict[str, dict[str, float]], b: float) -> dict[str, dict[str, float]]:
+def fuelDictMul(a: FuelType, b: float) -> FuelType:
     result = {}
     for key1 in a:
         result[key1] = {}
         for key2 in a[key1]:
             result[key1][key2] = a[key1][key2] * b
     return result
-
 
 
 
@@ -81,14 +82,14 @@ class Engine:
                          f"\t\t\t{self.consumption[fuelType][fuelName][1]:.4g} L/s"]
         return info
 
-    def fuelCalByTime(self, time: float) -> list[dict[str, dict[str, float]]]:
+    def fuelCalByTime(self, time: float) -> list[FuelType]:
         fuel = {'propellant' : {propName: time * self.consumption['propellant'][propName][1] / (1 - self.residual) for propName in self.propellant}, 'gas' : {gasName: time * self.consumption['gas'][gasName][1] / (1 - self.residual) for gasName in self.gas}}
         residualFuel = fuelDictMul(fuel, self.residual)
         return [fuel, residualFuel]
 
-    def fuelCalByCapacity(self, capacity: float) -> list[dict[str, dict[str, float]]]:
+    def fuelCalByCapacity(self, capacity: float) -> list[FuelType]:
         base = sum([self.propellant[propName] for propName in self.propellant] + [self.gas[gasName] / 200 for gasName in self.gas])
-        fuel = {'propellant' : {propName : capacity * self.propellant[propName] / base for propName in self.propellant}, 'gas' : {gasName : capacity * self.gas[gasName] * 200 / base for gasName in self.gas}}
+        fuel = {'propellant' : {propName : capacity * self.propellant[propName] / base for propName in self.propellant}, 'gas' : {gasName : capacity * self.gas[gasName] / base for gasName in self.gas}}
         residualFuel = fuelDictMul(fuel, self.residual)
         return [fuel, residualFuel]
 
@@ -135,8 +136,7 @@ class RealTank(Tank):
 
 
 class TankEngMix:
-    def __init__(self, num: int, tankName: str, engineList: list[tuple[str, int]]):
-        self.num = num
+    def __init__(self, tankName: str, engineList: list[tuple[str, int]]):
         self.tank = RealTank(tankName)
         self.engineList = [(Engines[engName], num) for engName, num in engineList]
         self.extraMass = 0
@@ -145,7 +145,7 @@ class TankEngMix:
         self.burnTime = 0
         self.maxThrust = sum(engine.maxThrust * n for engine, n in self.engineList)
         self.propConMassRate = sum(sum(engine.consumption['propellant'][propName][0] for propName in engine.consumption['propellant']) * n for engine, n in self.engineList)
-        self.startMass, self.endMass = 0, 0
+        self.Isp = self.maxThrust * 1000 / self.propConMassRate / G
 
     def autoSet(self):
         self.burnTime = min(engine.ratedBurnTime for engine, n in self.engineList) + 5
@@ -155,12 +155,14 @@ class TankEngMix:
             self.content = fuelDictPlus(self.content, fuelDictMul(fuel, n))
             self.residualContent = fuelDictPlus(self.residualContent, fuelDictMul(residualFuel, n))
         self.tank.setByContent(self.content)
-        self.startMass = self.tank.effectiveMass + sum(engine.mass * n for engine, n in self.engineList)
-        self.endMass = self.tank.effectiveMass + sum(engine.mass * n for engine, n in self.engineList)
-        for fuelType in self.content:
-            for fuelName in self.content[fuelType]:
-                self.startMass += self.content[fuelType][fuelName] * Fuels[fuelName] * 1000
-                self.endMass += self.residualContent[fuelType][fuelName] * Fuels[fuelName] * 1000
+
+    def fullSet(self):
+        self.content, self.residualContent = {'propellant': {}, 'gas': {}}, {'propellant': {}, 'gas': {}}
+        for engine, n in self.engineList:
+            fuel, residualFuel = engine.fuelCalByTime(engine.ratedBurnTime)
+            self.content = fuelDictPlus(self.content, fuelDictMul(fuel, n))
+            self.residualContent = fuelDictPlus(self.residualContent, fuelDictMul(residualFuel, n))
+        self.tank.setByContent(self.content)
 
     def info(self) -> list[str]:
         info = [f"Tank Name: \t\t{self.tank.name}", "Engines:"]
@@ -168,8 +170,7 @@ class TankEngMix:
         info += [f"Extra Mass: \t\t{self.extraMass:.4g} kg",
                  f"Burn Time: \t\t{self.burnTime:.4g} s",
                  f"Max Thrust: \t\t{self.maxThrust:.4g} kN",
-                 f"Start Mass:\t\t{self.startMass:.4g} kg",
-                 f"End Mass:\t\t{self.endMass:.4g} kg",
+                 f"Isp: \t\t\t{self.Isp:.4g} s",
                  f"Prop Consumption: \t{self.propConMassRate:.4g} kg/s"]
         info.append("Fuels:")
         for fuelType in self.content:
@@ -187,8 +188,6 @@ class TankEngMix:
 
 
 
-
-
 with open("Fuel.json", 'r') as f:
     Fuels = json.load(f)
 
@@ -202,13 +201,10 @@ for familyName, engineFamily_Data in Engines_Data.items():
     for name in engineFamily_Data['config']:
         Engines[name] = Engine(familyName, name)
 
-
-tank = Tank('HP Steel Fuselage')
-eng = Engines["WAC-Corporal"]
-mix = TankEngMix(1, "HP Steel Fuselage", [("WAC-Corporal", 2)])
-mix.autoSet()
-
-eng.show()
-mix.show()
-mix.tank.show()
-tank.show()
+if __name__ == '__main__':
+    eng1Name = "LR43-NA-5"
+    eng2Name = "LR43-NA-3"
+    engList = [(eng1Name, 1), (eng2Name, 2)]
+    stage = TankEngMix("Balloon Tank", engList)
+    stage.fullSet()
+    stage.tank.show()

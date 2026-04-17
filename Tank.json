@@ -8,5 +8,30 @@
         "utilization": 75,
         "densityStructure": 0.00017,
         "densityContainer": 0.00016
+    },
+    "Al Fuselage": {
+        "utilization": 87,
+        "densityStructure": 0.00003955,
+        "densityContainer": 0.00004
+    },
+    "HP Al Fuselage": {
+        "utilization": 84,
+        "densityStructure": 0.00013364,
+        "densityContainer": 0.00015
+    },
+    "Al Stringer Tank": {
+        "utilization": 92,
+        "densityStructure": 0.000027,
+        "densityContainer": 0.000027
+    },
+    "HP Al Stringer Tank": {
+        "utilization": 90,
+        "densityStructure": 0.00010761,
+        "densityContainer": 0.00012
+    },
+    "Balloon Tank": {
+        "utilization": 100,
+        "densityStructure": 0.000014,
+        "densityContainer": 0.000001
     }
 }

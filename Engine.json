@@ -45,5 +45,210 @@
                 }
             }
         }
+    },
+    "LR105": {
+        "origMass": 0.46,
+        "config": {
+            "LR43-NA-5": {
+                "massMult": 1.0,
+                "maxThrust": 240.2,
+                "Isp": 301,
+                "ratedBurnTime": 330,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR105-NA-3": {
+                "massMult": 1.0,
+                "maxThrust": 352.2,
+                "Isp": 309,
+                "ratedBurnTime": 330,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR105-NA-5": {
+                "massMult": 0.8978,
+                "maxThrust": 366.1,
+                "Isp": 313,
+                "ratedBurnTime": 350,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR105-NA-6": {
+                "massMult": 0.8978,
+                "maxThrust": 373.2,
+                "Isp": 313,
+                "ratedBurnTime": 350,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR105-NA-7.1": {
+                "massMult": 1.02174,
+                "maxThrust": 385.2,
+                "Isp": 316,
+                "ratedBurnTime": 350,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR105-NA-7.2": {
+                "massMult": 1.02174,
+                "maxThrust": 386.4,
+                "Isp": 316,
+                "ratedBurnTime": 350,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "RS-56-OSA": {
+                "massMult": 1.0,
+                "maxThrust": 386.4,
+                "Isp": 316,
+                "ratedBurnTime": 350,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            }
+        }
+    },
+    "LR43/LR89": {
+        "origMass": 0.72,
+        "config": {
+            "XLR43-NA-3": {
+                "massMult": 0.79,
+                "maxThrust": 617.4,
+                "Isp": 265,
+                "ratedBurnTime": 65,
+                "residual": 1.375,
+                "propellant": {
+                    "RP-1": 0.4945,
+                    "LqdOxygen": 0.5055
+                },
+                "gas": {
+                }
+            },
+            "LR43-NA-3": {
+                "massMult": 1.208333,
+                "maxThrust": 756.8,
+                "Isp": 278,
+                "ratedBurnTime": 135,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR89-NA-3": {
+                "massMult": 1.1388889,
+                "maxThrust": 758.7,
+                "Isp": 282,
+                "ratedBurnTime": 135,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR89-NA-5": {
+                "massMult": 1.15,
+                "maxThrust": 831.4,
+                "Isp": 290,
+                "ratedBurnTime": 150,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR89-NA-6": {
+                "massMult": 1.2264,
+                "maxThrust": 846.6,
+                "Isp": 290,
+                "ratedBurnTime": 160,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR89-NA-7.1": {
+                "massMult": 1.414,
+                "maxThrust": 931.7,
+                "Isp": 292.2,
+                "ratedBurnTime": 165,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "LR89-NA-7.2": {
+                "massMult": 1.414,
+                "maxThrust": 950.8,
+                "Isp": 293.4,
+                "ratedBurnTime": 165,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            },
+            "RS-56-OBA": {
+                "massMult": 1.7896,
+                "maxThrust": 1067.5,
+                "Isp": 295,
+                "ratedBurnTime": 170,
+                "residual": 2.25,
+                "propellant": {
+                    "RP-1": 0.3859,
+                    "LqdOxygen": 0.6141
+                },
+                "gas": {
+                }
+            }
+        }
     }
 }
